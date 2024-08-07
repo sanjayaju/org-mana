@@ -1,30 +1,33 @@
+// frontend/src/components/Signup.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
 
 
 function Signup() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = { username, password, email };
+    console.log('Payload:', payload);
+
     try {
-      await axios.post('http://localhost:5000/api/users', { username, password, email });
-      navigate('/'); // Redirect to login page after successful signup
+      const response = await axios.post('http://localhost:5000/api/users/register', payload);
+
+      console.log('Signup successful:', response.data);
     } catch (error) {
-      console.error('Signup failed:', error);
+      console.error('Error signing up:', error.response ? error.response.data : error.message);
     }
   };
 
   return (
-    <div className="login-container">
+    <div className="signup-container">
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
         <div className="input-group">
-          <label htmlFor="username">Username:</label>
+          <label htmlFor="username">Username</label>
           <input
             type="text"
             id="username"
@@ -34,17 +37,7 @@ function Signup() {
           />
         </div>
         <div className="input-group">
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="password">Password:</label>
+          <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
@@ -53,11 +46,21 @@ function Signup() {
             required
           />
         </div>
+        <div className="input-group">
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
         <button type="submit">Sign Up</button>
+        <p>
+          Already have an account? <a href="/" className="login-link">Log In</a>
+        </p>
       </form>
-      <p>
-        Already have an account? <Link to="/">Login</Link>
-      </p>
     </div>
   );
 }
