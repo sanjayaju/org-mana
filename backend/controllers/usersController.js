@@ -61,16 +61,24 @@ exports.deleteUser = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ username }).populate('organization');
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
     }
-    const token = jwt.sign({ id: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
-    res.json({ token, role: user.role, userId: user._id, organizationId: user.organization ? user.organization._id : null });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Incorrect password' });
+    }
+
+    // ... rest of your login logic
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 exports.assignOrganization = async (req, res) => {
   try {

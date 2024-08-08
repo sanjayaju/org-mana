@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routes/users');
 const organizationRoutes = require('./routes/organizations');
 require('./config/passport'); // Import the passport configuration
+const cors = require('cors');
 
 const app = express();
 
@@ -15,6 +16,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/org-management', {
 });
 
 // Middleware
+app.use(cors()); 
 app.use(bodyParser.json());
 app.use(passport.initialize());
 
